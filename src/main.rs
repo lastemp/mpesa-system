@@ -219,9 +219,9 @@ fn get_register_url_details(data: &web::Data<Pool>) -> RegisterUrlInputDetails {
 fn get_conn_builder() -> OptsBuilder {
     let builder = OptsBuilder::new()
         .ip_or_hostname(Some("localhost"))
-        .db_name(Some("ebusiness_test_mpesa"))
-        .user(Some("mpesa"))
-        .pass(Some("S%ceL$H*3KP"));
+        .db_name(Some("databasename"))
+        .user(Some("databaseuser"))
+        .pass(Some("databasepassword"));
     builder
 }
 
