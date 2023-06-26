@@ -6,8 +6,10 @@ mod db_layer;
 use crate::api_layer::RegisterUrlInputDetails;
 use actix_web::{get, post, web, App, HttpRequest, HttpServer, Responder};
 use base64::encode;
+use dotenv::dotenv;
 use mysql::*;
 use serde::{Deserialize, Serialize};
+use std::env;
 use std::str;
 
 #[derive(Deserialize)]
@@ -42,7 +44,7 @@ struct ConfirmationResponseData {
 const C2B_BILL_TYPE: &str = "C2B";
 
 #[get("/")]
-async fn greet() -> impl Responder {
+async fn index() -> impl Responder {
     format!("")
 }
 
@@ -216,18 +218,41 @@ fn get_register_url_details(data: &web::Data<Pool>) -> RegisterUrlInputDetails {
     register_url_details
 }
 
-fn get_conn_builder() -> OptsBuilder {
+fn get_conn_builder(
+    db_user: String,
+    db_password: String,
+    db_host: String,
+    db_port: u16,
+    db_name: String,
+) -> OptsBuilder {
     let builder = OptsBuilder::new()
-        .ip_or_hostname(Some("localhost"))
-        .db_name(Some("databasename"))
-        .user(Some("databaseuser"))
-        .pass(Some("databasepassword"));
+        .ip_or_hostname(Some(db_host))
+        .tcp_port(db_port)
+        .db_name(Some(db_name))
+        .user(Some(db_user))
+        .pass(Some(db_password));
     builder
 }
 
 #[actix_web::main]
 async fn main() {
-    let builder: OptsBuilder = get_conn_builder();
+    // get env vars
+    dotenv().ok();
+    let server_addr = env::var("SERVER_ADDR").expect("SERVER_ADDR is not set in .env file");
+    let db_user = env::var("MYSQL_USER").expect("MYSQL_USER is not set in .env file");
+    let db_password = env::var("MYSQL_PASSWORD").expect("MYSQL_PASSWORD is not set in .env file");
+    let db_host = env::var("MYSQL_HOST").expect("MYSQL_HOST is not set in .env file");
+    let my_db_port = env::var("MYSQL_PORT").expect("MYSQL_PORT is not set in .env file");
+    let db_name = env::var("MYSQL_DBNAME").expect("MYSQL_DBNAME is not set in .env file");
+    let mut http_server_status = String::from("[info] ActixWebHttpServer - Listening for HTTP on ");
+    let db_port: u16 = match my_db_port.parse::<u16>() {
+        Ok(a) => a,
+        Err(e) => 3306, // default mysql server port
+    };
+
+    http_server_status.push_str(&server_addr);
+
+    let builder: OptsBuilder = get_conn_builder(db_user, db_password, db_host, db_port, db_name);
     let pool = match Pool::new(builder) {
         Ok(pool) => pool,
         Err(e) => {
@@ -241,16 +266,16 @@ async fn main() {
     let server = match HttpServer::new(move || {
         App::new()
             .app_data(shared_data.clone())
-            .service(greet)
+            .service(index)
             .service(generate_auth)
             .service(register_client_urls)
             .service(validation_c2b)
             .service(confirmation_c2b)
     })
-    .bind("0.0.0.0:9247")
+    .bind(server_addr)
     {
         Ok(s) => {
-            println!("[info] ActixWebHttpServer - Listening for HTTP on /0.0.0.0:9247");
+            println!("{:?}", http_server_status);
             s
         }
         Err(e) => {

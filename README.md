@@ -17,27 +17,55 @@ The RESTful Actix Web API has below listed dependencies:
 - [MySQL](https://github.com/mysql/mysql-server) MySQL database server
 - [mysql](https://github.com/blackbeam/rust-mysql-simple) MySql database driver
 
-## Running The RESTful Actix Web API
+## Instructions
 
-First, open the terminal and clone the project using `git` (or you can simply download the project) and then change the directory:
+### NOTE:
 
-```Rust
-git clone https://github.com/lastemp/mpesa-system.git 
-cd mpesa-system
-```
+You may need to ensure that you are running the commands with the correct MySQL user/password.
 
-```MySQL
-Open folder "mpesa-system\sql" that contains the SQL files to create the tables in your local MySQL database server.
-Please ensure you execute the SQL statements found in the files in your MySQL database server.
-```
+1. Access MySQL Server
 
-```Config file
-Open file "xxx" located in path "mpesa-system\xxx" and then 
-change the configurations to match the credentials of your MySQL database server.
-```
+   Log in to the MySQL Server using a user account that has the CREATE DATABASE privilege.
 
-Once you are inside the project directory, run the application:
+2. Create database
 
-```Rust
-cargo run
-```
+   ```sql
+   CREATE DATABASE my_mpesa;
+   ```
+
+3. Create tables in the database
+
+   Directory "mysql\sql" contains below listed ".sql" files:
+   - *.sql
+
+   Copy the contents of each of the ".sql" and execute them separately on MySQL Server. This will create tables/stored procedures in the database.
+
+4. Create `.env` file:
+
+   ```ini
+   SERVER_ADDR=127.0.0.1:8080
+   MYSQL_USER=XXX
+   MYSQL_PASSWORD=XXX
+   MYSQL_HOST=127.0.0.1
+   MYSQL_PORT=3306
+   MYSQL_DBNAME=my_mpesa
+   ```
+   
+   Update "MYSQL_USER" and "MYSQL_PASSWORD" values with the correct MySQL user/password.
+   If your password contains dollar sign "$", then remember to escape it eg "123$abc" will need to be changed to "123\\$abc"
+
+5. Run the server:
+
+   ```shell
+   cargo run
+   ```
+
+6. Using a different terminal send an HTTP GET/POST requests to the running server:
+
+   Directory "mysql\apis" contains below listed api's files:
+   - generateauth.txt
+   - registerclienturls.txt
+   - validationc2b.txt
+   - confirmationc2b.txt
+
+   Copy the curl request on each of the ".txt" and execute them on separate terminals. Each ".txt" contains curl request and expected json reponse data.

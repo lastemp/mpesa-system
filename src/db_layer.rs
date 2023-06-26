@@ -68,7 +68,7 @@ pub fn create_mpesa_register_url(
             successful = true;
         }
         Err(e) => println!(
-            "Failed to open DB connection. create_mpesa_access_token {:?}",
+            "Failed to open DB connection. create_mpesa_register_url {:?}",
             e
         ),
     }
