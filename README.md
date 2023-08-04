@@ -39,12 +39,12 @@ $ pwd
    
    Tables
    ```sh
-   mysql -u root -p ebusiness_test_mpesa < sql/tables/*.sql
+   mysql -u root -p my_mpesa < sql/tables/*.sql
    ```
    
    Stored procedures
    ```sh
-   mysql -u root -p ebusiness_test_mpesa < sql/stored-procedures/*.sql
+   mysql -u root -p my_mpesa < sql/stored-procedures/*.sql
    ```
 
    For each step you will be prompted for the root user's password. If there's no password set on the root use, just hit enter again.
@@ -57,7 +57,7 @@ $ pwd
    MYSQL_PASSWORD=<password>
    MYSQL_HOST=127.0.0.1
    MYSQL_PORT=3306
-   MYSQL_DBNAME=ebusiness_test_mpesa
+   MYSQL_DBNAME=my_mpesa
    ```
 
    Update "MYSQL_USER" and "MYSQL_PASSWORD" values with the correct MySQL user/password.
