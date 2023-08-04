@@ -54,7 +54,6 @@ pub(crate) async fn register_client_urls(data: web::Data<Pool>) -> impl Responde
 #[post("/validationc2b")]
 pub(crate) async fn validation_c2b(
     validation_data: web::Json<C2bData>,
-    req: HttpRequest,
     data: web::Data<Pool>,
 ) -> impl Responder {
     let k = String::from(""); //Default value.
@@ -103,7 +102,6 @@ pub(crate) async fn validation_c2b(
 #[post("/confirmationc2b")]
 pub(crate) async fn confirmation_c2b(
     confirmation_data: web::Json<C2bData>,
-    req: HttpRequest,
     data: web::Data<Pool>,
 ) -> impl Responder {
     let k = String::from(""); //Default value.
