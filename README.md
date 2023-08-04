@@ -17,55 +17,63 @@ The RESTful Actix Web API has below listed dependencies:
 - [MySQL](https://github.com/mysql/mysql-server) MySQL database server
 - [mysql](https://github.com/blackbeam/rust-mysql-simple) MySql database driver
 
-## Instructions
+You'll need to have a MySQL (or compatible) server running on your machine to test this example.
 
-### NOTE:
+## Usage
 
-You may need to ensure that you are running the commands with the correct MySQL user/password.
+All the following commands assume that your current working directory is _this_ directory. I.e.:
 
-1. Access MySQL Server
+```console
+$ pwd
+.../mpesa-system
+```
 
-   Log in to the MySQL Server using a user account that has the CREATE DATABASE privilege.
+1. Create database, tables and stored-procedures:
 
-2. Create database
-
-   ```sql
-   CREATE DATABASE my_mpesa;
+   The `sql` directory contains the SQL files used for database setup:
+   
+   Database
+   ```sh
+   mysql -u root -p < sql/0_create_database.sql
+   ```
+   
+   Tables
+   ```sh
+   mysql -u root -p ebusiness_test_mpesa < sql/tables/*.sql
+   ```
+   
+   Stored procedures
+   ```sh
+   mysql -u root -p ebusiness_test_mpesa < sql/stored-procedures/*.sql
    ```
 
-3. Create tables in the database
+   For each step you will be prompted for the root user's password. If there's no password set on the root use, just hit enter again.
 
-   Directory "mysql\sql" contains below listed ".sql" files:
-   - *.sql
-
-   Copy the contents of each of the ".sql" and execute them separately on MySQL Server. This will create tables/stored procedures in the database.
-
-4. Create `.env` file:
+1. Create a `.env` file in this this directory:
 
    ```ini
    SERVER_ADDR=127.0.0.1:8080
-   MYSQL_USER=XXX
-   MYSQL_PASSWORD=XXX
+   MYSQL_USER=root
+   MYSQL_PASSWORD=<password>
    MYSQL_HOST=127.0.0.1
    MYSQL_PORT=3306
-   MYSQL_DBNAME=my_mpesa
+   MYSQL_DBNAME=ebusiness_test_mpesa
    ```
-   
+
    Update "MYSQL_USER" and "MYSQL_PASSWORD" values with the correct MySQL user/password.
-   If your password contains dollar sign "$", then remember to escape it eg "123$abc" will need to be changed to "123\\$abc"
 
-5. Run the server:
+1. Run the server:
 
-   ```shell
+   ```sh
    cargo run
    ```
 
-6. Using a different terminal send an HTTP GET/POST requests to the running server:
+1. Using a different terminal send requests to the running server. For example, using [HTTPie]:
 
-   Directory "mysql\apis" contains below listed api's files:
-   - generateauth.txt
-   - registerclienturls.txt
-   - validationc2b.txt
-   - confirmationc2b.txt
+   ```sh
+   http GET :8080/generateauth
+   ```
 
-   Copy the curl request on each of the ".txt" and execute them on separate terminals. Each ".txt" contains curl request and expected json reponse data.
+   See [the API documentation pages](./apis/) for more info.
+
+[HTTPie]: https://httpie.io/cli
