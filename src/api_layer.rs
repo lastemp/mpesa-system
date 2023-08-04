@@ -5,36 +5,12 @@ use reqwest::header::{ACCEPT, CONTENT_TYPE};
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize)]
-struct RegisterUrlData {
-    ShortCode: String,
-    ResponseType: String,
-    ConfirmationURL: String,
-    ValidationURL: String,
-}
-
-#[derive(Deserialize, Debug)]
-struct AuthTokenResponseData {
-    access_token: Option<String>,
-    expires_in: Option<String>,
-}
-
-#[derive(Deserialize, Debug)]
-struct RegisterUrlResponseData {
-    OriginatorCoversationID: Option<String>,
-    ConversationID: Option<String>,
-    ResponseDescription: Option<String>,
-}
-
-// This struct holds  Register Url processing data
-pub struct RegisterUrlInputDetails {
-    pub access_token: String,
-    pub api_url: String,
-    pub short_code: String,
-    pub response_type: String,
-    pub confirmation_url: String,
-    pub validation_url: String,
-}
+use crate::{
+    models::{
+        AuthTokenResponseData, RegisterUrlData, RegisterUrlInputDetails, RegisterUrlResponseData,
+    },
+    persistence::{create_mpesa_access_token, create_mpesa_register_url},
+};
 
 pub async fn generate_auth_token(
     data: web::Data<Pool>,
@@ -74,7 +50,7 @@ pub async fn generate_auth_token(
                         Err(e) => 0,
                     };
 
-                    crate::db_layer::create_mpesa_access_token(
+                    create_mpesa_access_token(
                         &data,
                         access_token.to_string(),
                         expires_in,
@@ -139,7 +115,7 @@ pub async fn register_url(
                     let response_description =
                         &my_output.ResponseDescription.as_ref().unwrap_or(&k);
 
-                    crate::db_layer::create_mpesa_register_url(
+                    create_mpesa_register_url(
                         &data,
                         originator_coversation_id.to_string(),
                         conversation_id.to_string(),
