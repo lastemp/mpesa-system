@@ -48,6 +48,8 @@ $ pwd
    ```
 
    For each step you will be prompted for the root user's password. If there's no password set on the root use, just hit enter again.
+   
+   NB: The Database tables and stored-procedures have not been uploaded!
 
 1. Create a `.env` file in this this directory:
 
